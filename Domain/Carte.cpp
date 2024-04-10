@@ -56,3 +56,7 @@ bool Carte::operator==(const Carte &c) const {
         return true;
     return false;
 }
+
+//Carte Carte::operator=(const Carte &c) {
+//    return Carte(c.getTitlu(), c.getAutor(), c.getGen(),c.getAnul());
+//}

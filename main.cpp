@@ -7,5 +7,6 @@ int main() {
     Tests t = Tests();
     t.run();
     ui.run();
+
     return 0;
 }

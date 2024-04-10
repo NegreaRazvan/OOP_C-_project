@@ -86,7 +86,7 @@ void Tests::test_copy_list() {
     repo.add_carte(Carte("das","fsa","gvba",2016));
     repo.add_carte(Carte("bdsa","fsa","gvba",1902));
     auto elems_cop = repo.copy_list();
-    for(unsigned long long i = 0; i < elems_cop.size(); i++)
+    for(int i = 0; i < elems_cop.size(); i++)
         assert(elems_cop.at(i) == repo.get_carte(i));
 }
 
@@ -113,6 +113,26 @@ void Tests::test_service_add_element() {
     catch (std::runtime_error &e){
         assert(string(e.what())=="Cartea deja apare in lista!\n");
     }
+}
+
+void Tests::test_get_all_elements() {
+    Service serv = Service();
+    serv.service_add_carte("das","fsa","gvba",2003);
+    serv.service_add_carte("fa","fsa","gvba",2013);
+    serv.service_add_carte("bda","fsa","gvba",2016);
+    serv.service_add_carte("bhnerws","fsa","gvba",1902);
+    Vector<Carte> v = serv.service_get_carti();
+    assert(v.size()==4);
+    auto it = v.begin();
+    int s{0};
+    while (it.valid()){
+        s+=it.element().getAnul();
+        it.next();
+    }
+    assert(s==7934);
+    serv.service_add_carte("b","a","c",1230);
+    v =  serv.service_get_carti();
+    assert(v.size()==5);
 }
 
 void Tests::test_service_delete_element() {
@@ -172,10 +192,10 @@ void Tests::test_filter_element() {
     serv.service_add_carte("fa","fsa","gvba",2016);
     serv.service_add_carte("bda","fsa","gvba",2016);
     serv.service_add_carte("fa","fsa","gvba",1902);
-    vector<Carte> v_cop;
+    Vector<Carte> v_cop;
     v_cop = serv.service_filter(2016);
     assert(v_cop.size()==2);
-    vector<Carte> v_cop_2;
+    Vector<Carte> v_cop_2;
     v_cop_2 = serv.service_filter("fa");
     assert(v_cop_2.size()==3);
 }
@@ -187,13 +207,39 @@ void Tests::test_sort_element() {
     serv.service_add_carte("fa","g","fvba",1900);
     serv.service_add_carte("bda","a","gvba",1900);
     serv.service_add_carte("bhnerws","z","gvba",1902);
-    vector<Carte> v_copie = serv.service_copy_list();
-    serv.sort_lambda(v_copie,1,true);
+    Vector<Carte> v_copie;
+    v_copie=serv.sort_lambda(1,true);
     assert(v_copie.at(0).getAnul()==1900);
-    serv.sort_lambda(v_copie,2,false);
+    v_copie = serv.sort_lambda(2,false);
     assert(v_copie.at(0).getAnul()==1902);
-    serv.sort_lambda(v_copie,3,true);
+    v_copie = serv.sort_lambda(3,true);
     assert(v_copie.at(0).getTitlu()=="fa");
+}
+
+void Tests::test_Vector() {
+    int a{2},b{3},c{5},d{7};
+    Vector<int> v;
+    v.push_back(a);
+    v.push_back(b);
+    assert(v.empty()== false);
+    assert(v.size()== 2);
+    v.erase(0);
+    assert(v.size()==1);
+    assert(v.at(0)==b);
+    v.push_back(c);
+    v.push_back(d);
+    int i =0;
+    for(const auto& el: v) {
+        assert(el == v[i]);
+        i++;
+    }
+    try{
+        v.erase(-1);
+        assert(false);
+    }
+    catch(std::out_of_range &e) {
+        assert(string(e.what())=="Index out of range");
+    }
 }
 
 void Tests::run(){
@@ -207,12 +253,17 @@ void Tests::run(){
     test_copy_list();
 
     test_service_add_element();
+    test_get_all_elements();
     test_service_delete_element();
     test_service_modify_element();
     test_service_search_element();
     test_filter_element();
     test_sort_element();
+    test_Vector();
 }
+
+
+
 
 
 
