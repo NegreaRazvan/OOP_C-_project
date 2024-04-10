@@ -1,12 +1,14 @@
 #pragma once
 #include <string>
 #include <stdexcept>
+#include <iostream>
 
 using std::string;
 
 class Carte {
 public:
 
+    Carte()=default;
     /**
      * constructor pentru carte
      * @param titlu - string
@@ -18,12 +20,24 @@ public:
      */
     Carte(const string &titlu, const string &autor, const string &gen,const int &anul);
 
+//    Carte (const Carte& c){
+//        std::cout<<"copiere\n";
+//        titlu = c.titlu;
+//        autor = c.autor;
+//        gen = c.gen;
+//        anul = c.anul;
+//    };
+//    💀
+//    ~Carte(){
+//        std::cout<<"destroy_child\n";
+//    }
+
     /**
      * getter pentru titlu
      * @return titlul -string
      * pre: -
      */
-    const string &getTitlu() const;
+    [[nodiscard]] const string &getTitlu() const;
 
     /**
      * setter pentru titlu
@@ -38,7 +52,7 @@ public:
      * @return autor -string
      * pre: -
      */
-    const string &getAutor() const;
+    [[nodiscard]] const string &getAutor() const;
 
     /**
      * setter pentru autor
@@ -53,7 +67,7 @@ public:
      * @return gen - string
      * pre: -
      */
-    const string &getGen() const;
+    [[nodiscard]] const string &getGen() const;
 
     /**
      * setter pentru gen
@@ -68,7 +82,7 @@ public:
      * @return anul - int
      * pre: -
      */
-    const int &getAnul() const;
+    [[nodiscard]] const int &getAnul() const;
 
     /**
      * setter pentru an
@@ -79,6 +93,8 @@ public:
     void setAnul(const int &anul);
 
     bool operator==(const Carte& c) const;
+
+//    Carte operator=(const Carte& c);
 
 private:
     string titlu;

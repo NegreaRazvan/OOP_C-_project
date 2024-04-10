@@ -3,7 +3,7 @@
 void UI::run() {
     bool ales = false;
     while(true){
-        int optiune;
+        int optiune{0};
         commands();
         std::cout<<"\nAlege o optiune: ";
         std::cin>>optiune;
@@ -43,7 +43,7 @@ void UI::run() {
 
 
 void UI::ui_add_carte() {
-    int an;
+    int an{0};
     string titlu, autor,gen;
     std::cout<<"Titlul: ";
     std::cin>>titlu;
@@ -74,7 +74,7 @@ void UI::ui_delete_carte() {
 }
 
 void UI::ui_modify_carte() {
-    int an;
+    int an{0};
     string titlu, autor,gen;
     std::cout<<"Titlul: ";
     std::cin>>titlu;
@@ -106,8 +106,8 @@ void UI::ui_search() {
 
 void UI::ui_filter() {
     std::cout<<"\n1.Filter dupa titlu\n2.Filter dupa an\nAlege o optiune: ";
-    int opt;
-    vector<Carte> v;
+    int opt{0};
+    Vector<Carte> v;
     std::cin>>opt;
     while (true) {
         switch (opt) {
@@ -119,7 +119,7 @@ void UI::ui_filter() {
                 break;
             }
             case 2: {
-                int an;
+                int an{0};
                 std::cout << "Anul: ";
                 std::cin >> an;
                 v = service.service_filter(an);
@@ -136,8 +136,8 @@ void UI::ui_filter() {
 }
 
 void UI::ui_sort() {
-    int opt, ord;
-    vector<Carte> v = service.service_copy_list();
+    int opt{0}, ord{0};
+    Vector<Carte> v;
     while (true) {
         std::cout<<"\n1.Sort dupa titlu\n2.Sort dupa autor\n3.Sort dupa an si gen\nAlege optiune: ";
         std::cin>>opt;
@@ -146,10 +146,10 @@ void UI::ui_sort() {
                 std::cout<<"\n1.Crescator\n2.Descrescator\nAlege: ";
                 std::cin>>ord;
                 if(ord==1)
-                    service.sort_lambda(v,1,true);
+                    v = service.sort_lambda(1,true);
                 else
                     if(ord==2)
-                        service.sort_lambda(v,1, false);
+                        v = service.sort_lambda(1, false);
                     else
                         std::cout<<"\nInvalid command\n";
                 break;
@@ -158,10 +158,10 @@ void UI::ui_sort() {
                 std::cout<<"\n1.Crescator\n2.Descrescator\nAlege: ";
                 std::cin>>ord;
                 if(ord==1)
-                    service.sort_lambda(v,2,true);
+                    v= service.sort_lambda(2,true);
                 else
                     if(ord==2)
-                        service.sort_lambda(v,2, false);
+                        v=service.sort_lambda(2, false);
                     else
                         std::cout<<"\nInvalid command\n";
                 break;
@@ -170,10 +170,10 @@ void UI::ui_sort() {
                 std::cout<<"\n1.Crescator\n2.Descrescator\nAlege: ";
                 std::cin>>ord;
                 if(ord==1)
-                    service.sort_lambda(v,3,true);
+                    v=service.sort_lambda(3,true);
                 else
                     if(ord==2)
-                        service.sort_lambda(v,3, false);
+                        v=service.sort_lambda(3, false);
                     else
                         std::cout<<"\nInvalid command\n";
                 break;
@@ -193,7 +193,7 @@ void UI::commands() {
 }
 
 void UI::ui_show_list() {
-    vector<Carte> v ;
+    Vector<Carte> v ;
     try{
         v = service.service_get_carti();
     }catch (std::runtime_error &e){

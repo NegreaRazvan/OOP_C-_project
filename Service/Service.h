@@ -1,5 +1,8 @@
 #pragma once
 #include "../Repository/Repository.h"
+#include <vector>
+
+using std::vector;
 
 class Service {
 private:
@@ -23,14 +26,7 @@ public:
        * @return cartile din lista
        * raises: "Lista goala!\n" - daca lista e goala
        */
-    const vector<Carte> & service_get_carti() const;
-
-    /**
-       * copiaza lista curenta din repo ul din service
-       * pre: -
-       * @return o copie a liste din repoul din service
-       */
-    vector<Carte> service_copy_list() const;
+    [[nodiscard]] const Vector<Carte> & service_get_carti() const;
 
     /**
      * adauga in lista element
@@ -72,25 +68,25 @@ public:
      * @return prima carte cu titlul acesta
      * raises: "Cartea nu se afla in lista!\n" - daca nu se afla in lista copia
      */
-    Carte service_search(const string &titlu) const;
+    [[nodiscard]] Carte service_search(const string &titlu) const;
 
     /**
      * filtreaza elementele dupa un titlu dat
      * @param titlu - titlul dupa care se filtreaza
-     * @return un vector cu elementele dorite
+     * @return un Vector cu elementele dorite
      */
-    vector<Carte> service_filter(const string &titlu) const;
+    [[nodiscard]] Vector<Carte> service_filter(const string &titlu) const;
 
     /**
      * filtreaza elementele dupa un an dat
      * @param an - an dupa care se filtreaza
-     * @return un vector cu elementele dorite
+     * @return un Vector cu elementele dorite
      */
-    vector<Carte> service_filter(const int &an) const;
+    [[nodiscard]] Vector<Carte> service_filter(const int &an) const;
 
     /**
      * sorteaza elementele din lista
-     * @param vector_copie - o copie a elementelor din lista
+     * @param Vector_copie - o copie a elementelor din lista
      * @param var - varianta de sortare care va fi folosita
      *            -1 - pt titlu
      *            -2 - pt autor
@@ -101,7 +97,7 @@ public:
      * pre: -
      * post: -
      */
-    void sort_lambda(vector<Carte> &vector_copie, const int& var, const bool& ordine) const;
+    [[nodiscard]] Vector<Carte> sort_lambda(const int& var, const bool& ordine) const;
 
 };
 

@@ -16,4 +16,7 @@ add_executable(untitled1 main.cpp
         UI/UI.cpp
         UI/UI.h
         UI/UI.h
+        MyList/Vector.h
+        MyList/Vector.h
+        MyList/Vector.h
 )
