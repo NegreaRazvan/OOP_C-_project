@@ -1,4 +1,5 @@
 #include "Carte.h"
+#include "../Exception/Exception.h"
 
 
 const string &Carte::getTitlu() const {
@@ -47,7 +48,7 @@ string Carte::valideazaCarte(const Carte &c){
     if (c.getTitlu().empty())
         error+="Titlu invalid!\n";
     if(!error.empty())
-        throw std::runtime_error(error);
+        throw Exception(error);
     return error;
 }
 

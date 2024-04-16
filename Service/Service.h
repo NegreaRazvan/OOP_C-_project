@@ -1,13 +1,16 @@
 #pragma once
 #include "../Repository/Repository.h"
+#include "../Cos_Carti/Cos.h"
 #include <vector>
+#include <random>
+
 
 using std::vector;
 
 class Service {
 private:
     Repository repository;
-
+    Cos cos;
 public:
     /**
        * Constructor default
@@ -26,7 +29,10 @@ public:
        * @return cartile din lista
        * raises: "Lista goala!\n" - daca lista e goala
        */
-    [[nodiscard]] const Vector<Carte> & service_get_carti() const;
+    [[nodiscard]] const vector<Carte> & service_get_carti() const;
+
+    [[nodiscard]] const vector<Carte> & service_get_carti_cos() const;
+
 
     /**
      * adauga in lista element
@@ -73,20 +79,20 @@ public:
     /**
      * filtreaza elementele dupa un titlu dat
      * @param titlu - titlul dupa care se filtreaza
-     * @return un Vector cu elementele dorite
+     * @return un vector cu elementele dorite
      */
-    [[nodiscard]] Vector<Carte> service_filter(const string &titlu) const;
+    [[nodiscard]] vector<Carte> service_filter(const string &titlu) const;
 
     /**
      * filtreaza elementele dupa un an dat
      * @param an - an dupa care se filtreaza
-     * @return un Vector cu elementele dorite
+     * @return un vector cu elementele dorite
      */
-    [[nodiscard]] Vector<Carte> service_filter(const int &an) const;
+    [[nodiscard]] vector<Carte> service_filter(const int &an) const;
 
     /**
      * sorteaza elementele din lista
-     * @param Vector_copie - o copie a elementelor din lista
+     * @param vector_copie - o copie a elementelor din lista
      * @param var - varianta de sortare care va fi folosita
      *            -1 - pt titlu
      *            -2 - pt autor
@@ -97,7 +103,17 @@ public:
      * pre: -
      * post: -
      */
-    [[nodiscard]] Vector<Carte> sort_lambda(const int& var, const bool& ordine) const;
+    [[nodiscard]] vector<Carte> sort_lambda(const int& var, const bool& ordine) const;
+
+    void service_add_carte_cos(const string & titlu);
+
+    void service_empty_cos();
+
+    void service_export_cos(const string& path);
+
+    void clear_all_files(const vector<string>& paths);
+
+     int generate_books(const int& nr_of_books);
 
 };
 

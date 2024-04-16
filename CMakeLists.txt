@@ -19,4 +19,8 @@ add_executable(untitled1 main.cpp
         MyList/Vector.h
         MyList/Vector.h
         MyList/Vector.h
+        Cos_Carti/Cos.cpp
+        Cos_Carti/Cos.h
+        Exception/Exception.cpp
+        Exception/Exception.h
 )

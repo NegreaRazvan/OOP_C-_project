@@ -5,6 +5,7 @@
 class UI {
 private:
     Service service;
+    vector<string> paths;
 
     /**
      * adauga o carte
@@ -47,10 +48,22 @@ private:
      */
     void ui_generate_carti(bool &ales);
 
+    void ui_add_carte_in_cos();
+
+    void ui_empty_cos();
+
+    void ui_generate_carti_in_cos();
+
+    void ui_export_carti();
+
+    void ui_show_cos();
     /**
      * comenzile oferite utilizatorului
      */
     static void commands();
+
+    void clear_files();
+
 
 public:
     /**
