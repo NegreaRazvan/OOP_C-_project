@@ -1,14 +1,14 @@
 #pragma once
-#include "../MyList/Vector.h"
 #include "../Domain/Carte.h"
 #include <algorithm>
+#include <vector>
 using std::copy;
 
-//using std::vector;
+using std::vector;
 
 class Repository {
 private:
-    Vector<Carte> elemente;
+    vector<Carte> elemente;
 public:
       /**
        * Constructor default
@@ -26,7 +26,7 @@ public:
        * pre: -
        * @return cartile din lista
        */
-      [[nodiscard]] const Vector<Carte> & get_carti() const;
+      [[nodiscard]] const vector<Carte> & get_carti() const;
 
       /**
        * se returneaza o carte de pe o pozitie
@@ -41,7 +41,7 @@ public:
        * pre: -
        * @return o copie a liste din repo
        */
-      [[nodiscard]] Vector<Carte> copy_list() const;
+      [[nodiscard]] vector<Carte> copy_list() const;
 
       /**
        * adauga o carte in lista din repo

@@ -21,7 +21,7 @@ void Tests::test_validate_object(){
     try{
         Carte c1 = Carte("", "", "", -2);
         assert(false);
-    } catch (std::runtime_error &e){
+    } catch (Exception &e){
         assert(string(e.what()) =="An invalid!\nAutor invalid!\nGen invalid!\nTitlu invalid!\n");
     }
 
@@ -96,7 +96,7 @@ void Tests::test_service_add_element() {
         serv.service_get_carti();
         assert(false);
     }
-    catch (std::runtime_error &e){
+    catch (Exception &e){
         assert(string(e.what())=="Lista goala!\n");
     }
     serv.service_add_carte("das","fsa","gvba",2003);
@@ -110,7 +110,7 @@ void Tests::test_service_add_element() {
         serv.service_add_carte("das","fsa","gvba",2003);
         assert(false);
     }
-    catch (std::runtime_error &e){
+    catch (Exception &e){
         assert(string(e.what())=="Cartea deja apare in lista!\n");
     }
 }
@@ -121,15 +121,15 @@ void Tests::test_get_all_elements() {
     serv.service_add_carte("fa","fsa","gvba",2013);
     serv.service_add_carte("bda","fsa","gvba",2016);
     serv.service_add_carte("bhnerws","fsa","gvba",1902);
-    Vector<Carte> v = serv.service_get_carti();
+    vector<Carte> v = serv.service_get_carti();
     assert(v.size()==4);
-    auto it = v.begin();
-    int s{0};
-    while (it.valid()){
-        s+=it.element().getAnul();
-        it.next();
-    }
-    assert(s==7934);
+//    auto it = v.begin();
+//    int s{0};
+//    while (it.valid()){
+//        s+=it.element().getAnul();
+//        it.next();
+//    }
+//    assert(s==7934);
     serv.service_add_carte("b","a","c",1230);
     v =  serv.service_get_carti();
     assert(v.size()==5);
@@ -148,7 +148,7 @@ void Tests::test_service_delete_element() {
         serv.service_delete_carte("f");
         assert(false);
     }
-    catch (std::runtime_error &e){
+    catch (Exception &e){
         assert(string(e.what())=="Cartea nu se afla in lista!\n");
     }
 }
@@ -168,7 +168,7 @@ void Tests::test_service_modify_element() {
         serv.service_modify_carte("f","a","b",2);
         assert(false);
     }
-    catch (std::runtime_error &e){
+    catch (Exception &e){
         assert(string(e.what())=="Cartea nu se afla in lista!\n");
     }
 }
@@ -181,7 +181,7 @@ void Tests::test_service_search_element() {
         serv.service_search("f");
         assert(false);
     }
-    catch (std::runtime_error &e){
+    catch (Exception &e){
         assert(string(e.what())=="Cartea nu se afla in lista!\n");
     }
 }
@@ -192,10 +192,10 @@ void Tests::test_filter_element() {
     serv.service_add_carte("fa","fsa","gvba",2016);
     serv.service_add_carte("bda","fsa","gvba",2016);
     serv.service_add_carte("fa","fsa","gvba",1902);
-    Vector<Carte> v_cop;
+    vector<Carte> v_cop;
     v_cop = serv.service_filter(2016);
     assert(v_cop.size()==2);
-    Vector<Carte> v_cop_2;
+    vector<Carte> v_cop_2;
     v_cop_2 = serv.service_filter("fa");
     assert(v_cop_2.size()==3);
 }
@@ -207,7 +207,7 @@ void Tests::test_sort_element() {
     serv.service_add_carte("fa","g","fvba",1900);
     serv.service_add_carte("bda","a","gvba",1900);
     serv.service_add_carte("bhnerws","z","gvba",1902);
-    Vector<Carte> v_copie;
+    vector<Carte> v_copie;
     v_copie=serv.sort_lambda(1,true);
     assert(v_copie.at(0).getAnul()==1900);
     v_copie = serv.sort_lambda(2,false);
@@ -242,6 +242,131 @@ void Tests::test_Vector() {
     }
 }
 
+void Tests::test_add_cos() {
+    string path = "Teste/File_For_Tests";
+    Cos cos ;
+    assert(cos.get_all_carti().empty());
+    cos.add_carte_to_cos(Carte("das","fsa","hnba",2003));
+    cos.add_carte_to_cos(Carte("fvca","bvaw","hsa",2013));
+    cos.add_carte_to_cos(Carte("gab","fea","gvaw",2016));
+    cos.add_carte_to_cos(Carte("bvawf","abgs","waf",1902));
+    assert(cos.get_all_carti().size()==4);
+    cos.empty_cos();
+    assert(cos.get_all_carti().empty());
+
+}
+
+void Tests::test_export_cos() {
+    string path = "File_Tests";
+    Cos cos;
+    cos.add_carte_to_cos(Carte("das","fsa","hnba",2003));
+    cos.add_carte_to_cos(Carte("fvca","bvaw","hsa",2013));
+    cos.add_carte_to_cos(Carte("gab","fea","gvaw",2016));
+    cos.add_carte_to_cos(Carte("bvawf","abgs","waf",1902));
+    cos.export_carti(path);
+}
+
+
+void Tests::test_delete_cos() {
+    Cos cos ;
+    assert(cos.get_all_carti().empty());
+    cos.add_carte_to_cos(Carte("das","fsa","hnba",2003));
+    cos.add_carte_to_cos(Carte("fvca","bvaw","hsa",2013));
+    cos.add_carte_to_cos(Carte("gab","fea","gvaw",2016));
+    cos.add_carte_to_cos(Carte("bvawf","abgs","waf",1902));
+    cos.delete_carte(3);
+    cos.delete_carte(2);
+    assert(cos.get_all_carti().size()==2);
+}
+
+void Tests::test_modify_cos() {
+    Cos cos ;
+    assert(cos.get_all_carti().empty());
+    cos.add_carte_to_cos(Carte("das","fsa","hnba",2003));
+    cos.modify_carte(Carte("das","f","a",3), 0);
+    assert(cos.get_all_carti().at(0).getAnul()==3);
+}
+
+void Tests::test_service_add_cos() {
+    Service serv = Service();
+    serv.service_add_carte("das","fsa","gvba",2003);
+    serv.service_add_carte("fa","fsa","gvba",2013);
+    serv.service_add_carte("bda","fsa","gvba",2016);
+    serv.service_add_carte("bhnerws","fsa","gvba",1902);
+    serv.service_add_carte_cos("das");
+    serv.service_add_carte_cos("fa");
+    serv.service_add_carte_cos("bda");
+    try {
+        serv.service_add_carte_cos("das");
+        assert(false);
+    }
+    catch (Exception &e){
+        assert(true);
+    }
+    assert(serv.service_get_carti_cos().size()==3);
+    serv.service_export_cos("testut");
+    serv.service_empty_cos();
+    try {
+        serv.service_get_carti_cos();
+    }
+    catch (Exception &e){
+        assert(string(e.what())=="Lista goala!\n");
+    }
+    try {
+        serv.service_empty_cos();
+        assert(false);
+    }
+    catch (Exception &e){
+        assert(true);
+    }
+    try {
+        serv.service_export_cos("testut");
+        assert(false);
+    }
+    catch (Exception &e){
+        assert(true);
+    }
+}
+
+void Tests::test_service_delete_cos() {
+    Service serv = Service();
+    serv.service_add_carte("das","fsa","gvba",2003);
+    serv.service_add_carte("fa","fsa","gvba",2013);
+    serv.service_add_carte("bda","fsa","gvba",2016);
+    serv.service_add_carte("bhnerws","fsa","gvba",1902);
+    serv.service_add_carte_cos("das");
+    serv.service_add_carte_cos("fa");
+    serv.service_delete_carte("das");
+    assert(serv.service_get_carti_cos().size()==1);
+}
+
+void Tests::test_service_modify_cos() {
+    Service serv = Service();
+    serv.service_add_carte("das","fsa","gvba",2003);
+    serv.service_add_carte("fa","fsa","gvba",2013);
+    serv.service_add_carte("bda","fsa","gvba",2016);
+    serv.service_add_carte("bhnerws","fsa","gvba",1902);
+    serv.service_add_carte_cos("das");
+    serv.service_add_carte_cos("fa");
+    serv.service_modify_carte("das","f","a",3);
+    assert(serv.service_get_carti_cos().at(0).getAnul()==3);
+}
+
+void Tests::test_generate_cos() {
+    Service serv = Service();
+    serv.service_add_carte("das","fsa","gvba",2003);
+    serv.service_add_carte("fa","fsa","gvba",2013);
+    serv.service_add_carte("bda","fsa","gvba",2016);
+    serv.service_add_carte("bhnerws","fsa","gvba",1902);
+    serv.generate_books(3);
+    try{
+        serv.generate_books(5);
+        assert(false);
+    }catch (Exception &e){
+        assert(true);
+    }
+}
+
 void Tests::run(){
     test_create_object();
     test_validate_object();
@@ -259,8 +384,25 @@ void Tests::run(){
     test_service_search_element();
     test_filter_element();
     test_sort_element();
+
     test_Vector();
+
+    test_add_cos();
+    test_export_cos();
+    test_delete_cos();
+    test_modify_cos();
+
+    test_service_add_cos();
+    test_service_delete_cos();
+    test_service_modify_cos();
+    test_generate_cos();
+
 }
+
+
+
+
+
 
 
 

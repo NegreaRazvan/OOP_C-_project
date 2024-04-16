@@ -1,4 +1,5 @@
 #include "UI.h"
+#include "../Exception/Exception.h"
 
 void UI::run() {
     bool ales = false;
@@ -7,8 +8,10 @@ void UI::run() {
         commands();
         std::cout<<"\nAlege o optiune: ";
         std::cin>>optiune;
-        if (optiune==0)
+        if (optiune==0) {
+//            clear_files();
             return;
+        }
         switch (optiune) {
             case 1:
                 ui_add_carte();
@@ -34,6 +37,21 @@ void UI::run() {
             case 8:
                 ui_show_list();
                 break;
+            case 9:
+                ui_add_carte_in_cos();
+                break;
+            case 10:
+                ui_empty_cos();
+                break;
+            case 11:
+                ui_generate_carti_in_cos();
+                break;
+            case 12:
+                ui_export_carti();
+                break;
+            case 13:
+                ui_show_cos();
+                break;
             default:
                 std::cout<<std::endl<<"Invalid command";
         }
@@ -56,7 +74,7 @@ void UI::ui_add_carte() {
     try{
         service.service_add_carte(titlu,autor,gen,an);
         std::cout<<"\n<<Carte adaugata cu succes!>>\n";
-    }catch (std::runtime_error &e){
+    }catch (Exception &e){
         std::cout<<std::endl<<e.what();
     }
 }
@@ -68,7 +86,7 @@ void UI::ui_delete_carte() {
     try{
         service.service_delete_carte(titlu);
         std::cout<<"\n<<Carte stearsa cu succes!>>\n";
-    }catch (std::runtime_error &e){
+    }catch (Exception &e){
         std::cout<<std::endl<<e.what();
     }
 }
@@ -87,7 +105,7 @@ void UI::ui_modify_carte() {
     try{
         service.service_modify_carte(titlu,autor,gen,an);
         std::cout<<"\n<<Carte modificata cu succes!>>\n";
-    }catch (std::runtime_error &e){
+    }catch (Exception &e){
         std::cout<<std::endl<<e.what();
     }
 }
@@ -99,7 +117,7 @@ void UI::ui_search() {
     try{
         Carte c = service.service_search(titlu);
         std::cout<<"\n{Titlu} "<<c.getTitlu()<<" {Autor} "<<c.getAutor()<<" {Gen} "<<c.getGen()<<" {Anul} "<<c.getAnul()<<std::endl;
-    }catch (std::runtime_error &e){
+    }catch (Exception &e){
         std::cout<<std::endl<<e.what();
     }
 }
@@ -107,7 +125,7 @@ void UI::ui_search() {
 void UI::ui_filter() {
     std::cout<<"\n1.Filter dupa titlu\n2.Filter dupa an\nAlege o optiune: ";
     int opt{0};
-    Vector<Carte> v;
+    vector<Carte> v;
     std::cin>>opt;
     while (true) {
         switch (opt) {
@@ -137,7 +155,7 @@ void UI::ui_filter() {
 
 void UI::ui_sort() {
     int opt{0}, ord{0};
-    Vector<Carte> v;
+    vector<Carte> v;
     while (true) {
         std::cout<<"\n1.Sort dupa titlu\n2.Sort dupa autor\n3.Sort dupa an si gen\nAlege optiune: ";
         std::cin>>opt;
@@ -189,14 +207,14 @@ void UI::ui_sort() {
 }
 
 void UI::commands() {
-    std::cout<<"\n0.Exit\n1.Add carte\n2.Delete carte\n3.Modify carte\n4.Search carte\n5.Filter\n6.Sort\n7.Generate carti\n8.Show list\n";
+    std::cout<<"\n0.Exit\n1.Add carte\n2.Delete carte\n3.Modify carte\n4.Search carte\n5.Filter\n6.Sort\n7.Generate carti\n8.Show list\n9.Adauga in cos\n10.Goleste cosul\n11.Adauga intamplator in cos\n12.Exporteaza cartile\n13.Arata cosul\n";
 }
 
 void UI::ui_show_list() {
-    Vector<Carte> v ;
+    vector<Carte> v ;
     try{
         v = service.service_get_carti();
-    }catch (std::runtime_error &e){
+    }catch (Exception &e){
         std::cout<<std::endl<<e.what();
     }
     for(const auto & c : v)
@@ -215,3 +233,64 @@ void UI::ui_generate_carti(bool &ales) {
     }else
         std::cout<<"\nCarti deja inregistrate in lista!\n";
 }
+
+void UI::ui_add_carte_in_cos() {
+    string titlu;
+    std::cout<<"Titlul: ";
+    std::cin>>titlu;
+    try{
+        service.service_add_carte_cos(titlu);
+        std::cout<<"\n<<Carte adaugata cu succes!>>\n";
+    }catch (Exception &e){
+        std::cout<<std::endl<<e.what();
+    }
+}
+
+void UI::ui_empty_cos() {
+    try{
+        service.service_empty_cos();
+        std::cout<<"\n<<Cos golit!>>\n";
+    }catch (Exception &e){
+        std::cout<<std::endl<<e.what();
+    }
+}
+
+void UI::ui_generate_carti_in_cos() {
+    int rng,nr_added;
+    std::cout<<"Numarul de carti: ";
+    std::cin>>rng;
+    try{
+        nr_added = service.generate_books(rng);
+        std::cout<<"\n<<Au fost adaugate "<<nr_added<<" carti>>\n";
+    }catch (Exception &e){
+        std::cout<<std::endl<<e.what();
+    }
+}
+
+void UI::ui_export_carti() {
+    string path;
+    std::cout<<"Alege o destinatie: ";
+    std::cin>>path;
+    try{
+        service.service_export_cos(path);
+        std::cout<<"\n<<Cos exportat!>>\n";
+        paths.push_back(path);
+    }catch (Exception &e){
+        std::cout<<std::endl<<e.what();
+    }
+}
+
+void UI::ui_show_cos() {
+    vector<Carte> v ;
+    try{
+        v = service.service_get_carti_cos();
+    }catch (Exception &e){
+        std::cout<<std::endl<<e.what();
+    }
+    for(const auto & c : v)
+        std::cout<<"\n{Titlu} "<<c.getTitlu()<<" {Autor} "<<c.getAutor()<<" {Gen} "<<c.getGen()<<" {Anul} "<<c.getAnul()<<std::endl;
+}
+
+//void UI::clear_files() {
+//    service.clear_all_files(paths);
+//}

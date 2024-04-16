@@ -1,7 +1,10 @@
 #pragma once
 #include "../Domain/Carte.h"
 #include "../Repository/Repository.h"
+#include "../Cos_Carti/Cos.h"
 #include "../Service/Service.h"
+#include "../MyList/Vector.h"
+#include "../Exception/Exception.h"
 
 class Tests {
 private:
@@ -22,7 +25,17 @@ private:
     static void test_filter_element();
     static void test_sort_element();
 
-    void test_Vector();
+    static void test_Vector();
+
+    static void test_add_cos();
+    static void test_export_cos();
+    static void test_delete_cos();
+    static void test_modify_cos();
+
+    static void test_service_add_cos();
+    static void test_service_delete_cos();
+    static void test_service_modify_cos();
+    static void test_generate_cos();
 
 public:
     void run();
