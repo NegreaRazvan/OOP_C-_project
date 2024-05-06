@@ -13,78 +13,62 @@ void Service::service_add_carte(const string &titlu, const string &autor, const 
 //    auto i = std::find(repository.get_carti().begin(),repository.get_carti().end(), carte);
 //    if (i==repository.get_carti().end())
 //        throw std::runtime_error("Cartea deja apare in lista!\n");
-    for(int i = 0; i < repository.get_carti().size(); i++)
-        if(repository.get_carti().at(i)==carte)
-            throw Exception("Cartea deja apare in lista!\n");
+    auto position = repository.search(titlu);
+    if(position!=repository.get_carti().end())
+        throw Exception("Cartea se afla deja in lista!\n");
     repository.add_carte(carte);
+    auto* u = new UndoAdd(carte,repository);
+    undo_action.push_back(u);
 }
 
 void Service::service_delete_carte(const string &titlu) {
-    int position = repository.search(titlu);
-    if(position==-1)
+    auto position = repository.search(titlu);
+    if(position==repository.get_carti().end())
         throw Exception("Cartea nu se afla in lista!\n");
+    auto* u = new UndoDelete(*repository.search(titlu),repository);
+    undo_action.push_back(u);
     repository.delete_carte(position);
-    int poz, ok=0;
-    for(int i = 0 ; i < cos.get_all_carti().size(); i++)
-        if(titlu == cos.get_all_carti().at(i).getTitlu()) {
-            poz = i;
-            ok = 1;
-        }
-    if (ok)
+    auto poz = std::find_if(cos.get_all_carti().begin(),cos.get_all_carti().end(), [titlu](const Carte& c){return titlu==c.getTitlu();});
+    if (poz!=cos.get_all_carti().end()) {
         cos.delete_carte(poz);
+    }
 }
 
 void Service::service_modify_carte(const string &titlu, const string &autor, const string &gen, const int &an) {
     Carte carte = Carte(titlu,autor,gen,an);
-    int position = repository.search(carte.getTitlu());
-    if(position==-1)
+    auto position = repository.search(titlu);
+    if(position==repository.get_carti().end())
         throw Exception("Cartea nu se afla in lista!\n");
-    int poz, ok=0;
-    repository.modify_carte(carte, position);
-    for(int i = 0 ; i < cos.get_all_carti().size(); i++)
-        if(titlu == cos.get_all_carti().at(i).getTitlu()) {
-            poz = i;
-            ok = 1;
-        }
-    if (ok)
-        cos.modify_carte(carte,poz);
+    auto* u = new UndoModify(carte,*position,repository);
+    undo_action.push_back(u);
+    repository.modify_carte(carte,*position);
+    auto poz = std::find_if(cos.get_all_carti().begin(),cos.get_all_carti().end(), [titlu](const Carte& c){return titlu==c.getTitlu();});
+    if (poz!=cos.get_all_carti().end()) {
+        cos.modify_carte(carte, *poz);
+    }
 }
 
 Carte Service::service_search(const string &titlu) const {
-    int position = repository.search(titlu);
-    if(position==-1)
+    auto position = repository.search(titlu);
+    if(position==repository.get_carti().end())
         throw Exception("Cartea nu se afla in lista!\n");
-    return repository.get_carte(position);
+    return *position;
 }
 
 vector<Carte> Service::service_filter(const string &titlu) const{
-    vector <Carte> v, v_copy;
-    vector <Carte> V;
-    for(const auto & i : repository.get_carti())
-        v.push_back(i);
+    vector <Carte> v=repository.get_carti(), v_copy;
     std::copy_if(v.begin(), v.end(), std::back_inserter(v_copy),[=](const Carte& c){return c.getTitlu()==titlu;});
-    for(const auto & i : v_copy)
-        V.push_back(i);
-    return V;
+    return v_copy;
 }
 
 vector<Carte> Service::service_filter(const int &an) const{
-    vector <Carte> v, v_copy;
-    vector <Carte> V;
-    for(const auto & i : repository.get_carti())
-        v.push_back(i);
+    vector <Carte> v=repository.get_carti(), v_copy;
     std::copy_if(v.begin(), v.end(), std::back_inserter(v_copy),[=](const Carte& c){return c.getAnul()==an;});
-    for(const auto & i : v_copy)
-        V.push_back(i);
-    return V;
+    return v_copy;
 }
 
 vector<Carte> Service::sort_lambda(const int &var, const bool &ordine) const {
-    vector <Carte> v;
-    vector <Carte> V;
-    auto it = repository.get_carti().begin();
-    for(const auto & i : repository.get_carti())
-        v.push_back(i);
+    vector <Carte> v=repository.get_carti();
     switch (var) {
         case 1:
             std::sort(v.begin(), v.end(),[ordine](const Carte &c1, const Carte &c2){if(c1.getTitlu()<=c2.getTitlu()) return ordine; return !(ordine);});
@@ -96,10 +80,7 @@ vector<Carte> Service::sort_lambda(const int &var, const bool &ordine) const {
             std::sort(v.begin(), v.end(), [ordine](const Carte &c1, const Carte &c2){if(c1.getAnul()<c2.getAnul())return ordine;else if(c1.getAnul()==c2.getAnul())if(c1.getGen()<=c2.getGen())return ordine;return !(ordine);});
             break;
     }
-    for(int i = 0; i < repository.get_carti().size(); i++)
-        V.push_back(v.at(i));
-    return V;
-
+    return v;
 }
 
 const vector<Carte> &Service::service_get_carti_cos() const {
@@ -110,12 +91,11 @@ const vector<Carte> &Service::service_get_carti_cos() const {
 }
 
 void Service::service_add_carte_cos(const string &titlu) {
-    int poz = repository.search(titlu);
-    Carte carte = repository.get_carte(poz);
+    auto position = repository.search(titlu);
     for(const auto & c : cos.get_all_carti())
-        if(c==carte)
+        if(c==*position)
             throw Exception("Cartea deja apare in cos!\n");
-    cos.add_carte_to_cos(carte);
+    cos.add_carte_to_cos(*position);
 }
 
 void Service::service_empty_cos() {
@@ -154,6 +134,24 @@ int Service::generate_books(const int &nr_of_books) {
     }
     return nr_of_books_added_to_the_list;
 }
+
+map<string,int> Service::raport_genuri() const {
+    map<string,int> raport ;
+    for(const auto& carte: repository.get_carti())
+        raport[carte.getGen()]++;
+    return raport;
+}
+
+void Service::undo() {
+    if(undo_action.empty())
+        throw Exception("Undo unavailable!");
+    undo_action.back()->doUndo();
+    auto u = undo_action.back();
+    undo_action.pop_back();
+    delete u;
+}
+
+
 
 
 

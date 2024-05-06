@@ -3,25 +3,30 @@
 #include "../Cos_Carti/Cos.h"
 #include <vector>
 #include <random>
+#include <map>
+#include "Undo.h"
+#include <memory>
 
-
+using std::unique_ptr;
+using std::map;
 using std::vector;
 
 class Service {
 private:
-    Repository repository;
+    Repository_Interface &repository;
+    vector<Undo*> undo_action;
     Cos cos;
 public:
     /**
        * Constructor default
        * returneaza: un service
        */
-    Service() = default;
-    /**
-       * nu permite sa fie copiat service ul
-       * @param service
-       */
-    Service (const Service &service) =delete;
+    Service(Repository &repo) :repository(repo){};
+
+    ~Service(){
+        for(const auto& u: undo_action)
+            delete u;
+    };
 
     /**
        * returneaza toate cartile din lista din repo
@@ -111,9 +116,11 @@ public:
 
     void service_export_cos(const string& path);
 
-    void clear_all_files(const vector<string>& paths);
-
      int generate_books(const int& nr_of_books);
+
+    [[nodiscard]] map<string,int> raport_genuri() const;
+
+    void undo();
 
 };
 

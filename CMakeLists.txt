@@ -3,6 +3,8 @@ project(untitled1)
 
 set(CMAKE_CXX_STANDARD 23)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+find_package(Qt5Widgets REQUIRED)
+set(CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.14.0\\5.14.0\\mingw73_32\\")
 
 add_executable(untitled1 main.cpp
         Domain/Carte.cpp
@@ -23,4 +25,6 @@ add_executable(untitled1 main.cpp
         Cos_Carti/Cos.h
         Exception/Exception.cpp
         Exception/Exception.h
+        Service/Undo.h
+
 )

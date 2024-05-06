@@ -37,6 +37,10 @@ private:
     static void test_service_modify_cos();
     static void test_generate_cos();
 
+    static void test_file_repo();
+
+    static void test_undo();
+
 public:
     void run();
 };

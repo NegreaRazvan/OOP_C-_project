@@ -25,12 +25,13 @@ const vector<Carte>& Cos::get_all_carti() const {
     return cos_carti;
 }
 
-void Cos::delete_carte(const int &poz) {
-    cos_carti.erase(cos_carti.begin()+poz);
+void Cos::delete_carte(const __gnu_cxx::__normal_iterator<const Carte *, vector<Carte>> &poz) {
+    cos_carti.erase(poz);
 }
 
-void Cos::modify_carte(const Carte &carte, const int& poz) {
-    cos_carti[poz] = carte;
+void Cos::modify_carte(const Carte &carte, const Carte& c_de_mod) {
+    auto book = std::find_if(cos_carti.begin(),cos_carti.end(), [&](const Carte& c){return c_de_mod == c;});
+    *book=carte;
 }
 
 

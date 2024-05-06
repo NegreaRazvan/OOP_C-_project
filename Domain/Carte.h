@@ -94,6 +94,8 @@ public:
 
     bool operator==(const Carte& c) const;
 
+    Carte& operator=(const Carte& c);
+
 //    Carte operator=(const Carte& c);
 
 private:

@@ -5,7 +5,6 @@
 class UI {
 private:
     Service service;
-    vector<string> paths;
 
     /**
      * adauga o carte
@@ -57,12 +56,14 @@ private:
     void ui_export_carti();
 
     void ui_show_cos();
+
+    void ui_raport_genuri();
+
+    void ui_undo();
     /**
      * comenzile oferite utilizatorului
      */
     static void commands();
-
-    void clear_files();
 
 
 public:
@@ -70,7 +71,7 @@ public:
      * constructor default pt UI
      * returneaza un ui
      */
-    UI() = default;
+    UI(Service &serv) : service{serv}{};
     /**
      * nu permite sa se faca o copie la ui
      * @param ui - ui
