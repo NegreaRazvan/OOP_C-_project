@@ -24,11 +24,10 @@ public:
 
     [[nodiscard]] const vector<Carte> &get_all_carti() const;
 
-    void delete_carte(const int &poz);
+    void delete_carte(const __gnu_cxx::__normal_iterator<const Carte *, vector<Carte>> &poz);
 
-    void modify_carte(const Carte &carte, const int& poz);
+    void modify_carte(const Carte &carte, const Carte& c_de_mod);
 
-    [[nodiscard]] int search(const string &titlu) const;
 };
 
 

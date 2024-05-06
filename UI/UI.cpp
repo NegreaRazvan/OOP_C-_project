@@ -52,6 +52,12 @@ void UI::run() {
             case 13:
                 ui_show_cos();
                 break;
+            case 14:
+                ui_raport_genuri();
+                break;
+            case 15:
+                ui_undo();
+                break;
             default:
                 std::cout<<std::endl<<"Invalid command";
         }
@@ -207,7 +213,7 @@ void UI::ui_sort() {
 }
 
 void UI::commands() {
-    std::cout<<"\n0.Exit\n1.Add carte\n2.Delete carte\n3.Modify carte\n4.Search carte\n5.Filter\n6.Sort\n7.Generate carti\n8.Show list\n9.Adauga in cos\n10.Goleste cosul\n11.Adauga intamplator in cos\n12.Exporteaza cartile\n13.Arata cosul\n";
+    std::cout<<"\n0.Exit\n1.Add carte\n2.Delete carte\n3.Modify carte\n4.Search carte\n5.Filter\n6.Sort\n7.Generate carti\n8.Show list\n9.Adauga in cos\n10.Goleste cosul\n11.Adauga intamplator in cos\n12.Exporteaza cartile\n13.Arata cosul\n14.Raport\n15.Undo\n";
 }
 
 void UI::ui_show_list() {
@@ -223,6 +229,14 @@ void UI::ui_show_list() {
 }
 
 void UI::ui_generate_carti(bool &ales) {
+    vector<string> titles{"To Kill a Mockingbird","The Great Gatsby","The Catcher in the Rye","1984","Harry Potter and the Philosopher's Stone"};
+    for(const auto & t: titles)
+        try{
+            Carte c = service.service_search(t);
+            ales = true;
+        }catch (Exception &e) {
+        }
+
     if(!ales) {
         service.service_add_carte("To Kill a Mockingbird", "Harper Lee", "Fiction", 1960);
         service.service_add_carte("The Great Gatsby", "F. Scott Fitzgerald", "Fiction", 1925);
@@ -231,7 +245,7 @@ void UI::ui_generate_carti(bool &ales) {
         service.service_add_carte("Harry Potter and the Philosopher's Stone", "J.K. Rowling", "Fantasy", 1997);
         ales = true;
     }else
-        std::cout<<"\nCarti deja inregistrate in lista!\n";
+        std::cout<<"\nOptiunea a fost deja aleasa odata!\n";
 }
 
 void UI::ui_add_carte_in_cos() {
@@ -274,7 +288,6 @@ void UI::ui_export_carti() {
     try{
         service.service_export_cos(path);
         std::cout<<"\n<<Cos exportat!>>\n";
-        paths.push_back(path);
     }catch (Exception &e){
         std::cout<<std::endl<<e.what();
     }
@@ -291,6 +304,19 @@ void UI::ui_show_cos() {
         std::cout<<"\n{Titlu} "<<c.getTitlu()<<" {Autor} "<<c.getAutor()<<" {Gen} "<<c.getGen()<<" {Anul} "<<c.getAnul()<<std::endl;
 }
 
-//void UI::clear_files() {
-//    service.clear_all_files(paths);
-//}
+void UI::ui_raport_genuri() {
+    map <string,int> rap = service.raport_genuri();
+    std::cout<<"Nr de aparitii a fiecarui gen: \n";
+    for(const auto & g: rap)
+        std::cout<<g.first<<": "<<g.second<<std::endl;
+}
+
+void UI::ui_undo() {
+    try{
+        service.undo();
+        std::cout<<"\n<<Successfully undone>>\n";
+    }
+    catch (Exception &e){
+        std::cout<<std::endl<<e.what()<<std::endl;
+    }
+}

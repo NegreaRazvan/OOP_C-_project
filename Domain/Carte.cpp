@@ -58,6 +58,16 @@ bool Carte::operator==(const Carte &c) const {
     return false;
 }
 
+Carte& Carte::operator=(const Carte &c) {
+    titlu=c.titlu;
+    autor=c.autor;
+    gen=c.gen;
+    anul=c.anul;
+    return *this;
+}
+
+
+
 //Carte Carte::operator=(const Carte &c) {
 //    return Carte(c.getTitlu(), c.getAutor(), c.getGen(),c.getAnul());
 //}
