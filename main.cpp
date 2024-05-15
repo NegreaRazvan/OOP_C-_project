@@ -1,18 +1,6 @@
-#include "Teste/Tests.h"
-#include "UI/UI.h"
+#include "UI/UI_Application.h"
 
-int main() {
-    Repository repository;
-    FileRepository repository1{"books.txt"};
-    Service service{repository1};
-    UI ui = UI(service);
-    Tests t = Tests();
-    t.run();
-    ui.run();
-
-
-
-
-
+int main(int argc, char *argv[]) {
+    run(argc, argv);
     return 0;
 }

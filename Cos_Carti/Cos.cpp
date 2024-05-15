@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Cos.h"
 
 //void Cos::empty_file(const string& path_export) {

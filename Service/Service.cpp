@@ -91,11 +91,11 @@ const vector<Carte> &Service::service_get_carti_cos() const {
 }
 
 void Service::service_add_carte_cos(const string &titlu) {
-    auto position = repository.search(titlu);
+    auto carte = service_search(titlu);
     for(const auto & c : cos.get_all_carti())
-        if(c==*position)
+        if(c==carte)
             throw Exception("Cartea deja apare in cos!\n");
-    cos.add_carte_to_cos(*position);
+    cos.add_carte_to_cos(carte);
 }
 
 void Service::service_empty_cos() {
