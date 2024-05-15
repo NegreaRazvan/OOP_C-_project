@@ -1,30 +1,61 @@
 cmake_minimum_required(VERSION 3.27)
-project(untitled1)
+project(C___OOP_QT)
 
 set(CMAKE_CXX_STANDARD 23)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-find_package(Qt5Widgets REQUIRED)
-set(CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.14.0\\5.14.0\\mingw73_32\\")
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
-add_executable(untitled1 main.cpp
-        Domain/Carte.cpp
-        Domain/Carte.h
-        Repository/Repository.cpp
-        Repository/Repository.h
+set(CMAKE_PREFIX_PATH "C:/Qt/6.7.0/mingw_64")
+
+find_package(Qt6 COMPONENTS
+        Core
+        Gui
+        Widgets
+        REQUIRED)
+
+add_executable(C___OOP_QT main.cpp
+        UI/UI_Application.cpp
         Teste/Tests.cpp
-        Teste/Tests.h
         Service/Service.cpp
-        Service/Service.h
-        UI/UI.cpp
-        UI/UI.h
-        UI/UI.h
-        MyList/Vector.h
-        MyList/Vector.h
-        MyList/Vector.h
-        Cos_Carti/Cos.cpp
-        Cos_Carti/Cos.h
+        Repository/Repository.cpp
         Exception/Exception.cpp
-        Exception/Exception.h
-        Service/Undo.h
-
+        Domain/Carte.cpp
+        Cos_Carti/Cos.cpp
+        UI/UI_Application.h
+        UI/BookGUI.cpp
+        UI/BookGUI.h)
+target_link_libraries(C___OOP_QT
+        Qt::Core
+        Qt::Gui
+        Qt::Widgets
 )
+
+if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(DEBUG_SUFFIX)
+    if (MSVC AND CMAKE_BUILD_TYPE MATCHES "Debug")
+        set(DEBUG_SUFFIX "d")
+    endif ()
+    set(QT_INSTALL_PATH "${CMAKE_PREFIX_PATH}")
+    if (NOT EXISTS "${QT_INSTALL_PATH}/bin")
+        set(QT_INSTALL_PATH "${QT_INSTALL_PATH}/..")
+        if (NOT EXISTS "${QT_INSTALL_PATH}/bin")
+            set(QT_INSTALL_PATH "${QT_INSTALL_PATH}/..")
+        endif ()
+    endif ()
+    if (EXISTS "${QT_INSTALL_PATH}/plugins/platforms/qwindows${DEBUG_SUFFIX}.dll")
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E make_directory
+                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/platforms/")
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                "${QT_INSTALL_PATH}/plugins/platforms/qwindows${DEBUG_SUFFIX}.dll"
+                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/platforms/")
+    endif ()
+    foreach (QT_LIB Core Gui Widgets)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                "${QT_INSTALL_PATH}/bin/Qt6${QT_LIB}${DEBUG_SUFFIX}.dll"
+                "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
+    endforeach (QT_LIB)
+endif ()
