@@ -24,7 +24,8 @@ add_executable(C___OOP_QT main.cpp
         Cos_Carti/Cos.cpp
         UI/UI_Application.h
         UI/BookGUI.cpp
-        UI/BookGUI.h)
+        UI/BookGUI.h
+        UI/BookGUI.cpp)
 target_link_libraries(C___OOP_QT
         Qt::Core
         Qt::Gui
