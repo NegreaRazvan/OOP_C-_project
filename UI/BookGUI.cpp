@@ -1,9 +1,9 @@
 #include "BookGUI.h"
 
+
 void BookGUI::initGUI() {
     auto FirstColumn = new QVBoxLayout;
     auto search = new QFormLayout;
-    auto Main = new QHBoxLayout{};
     setMinimumSize(1100,200);
     setLayout(Main);
 
@@ -56,6 +56,23 @@ void BookGUI::initGUI() {
 
     Main->addLayout(SecondColumn);
 
+}
+
+void BookGUI::Report_Buttons(){
+    auto rep = service.raport_genuri();
+    for(auto* b: this->BUTS){
+        b->hide();
+    }
+    for(const auto& t: rep){
+
+        QString str = QString::fromUtf8(t.first);
+        auto but = new QPushButton(str);
+        BUTS.push_back(but);
+        Main->addWidget(but);
+        QObject::connect(but,&QPushButton::clicked,[=](){
+            QMessageBox::information(nullptr,"nr",QString::number(t.second));
+        });
+    }
 }
 
 void BookGUI::ui_show_list() {
@@ -134,6 +151,7 @@ void BookGUI::initConnect() {
             txtAuthor->clear();
             txtGenre->clear();
             txtYear->clear();
+            Report_Buttons();
         } catch (Exception &e) {
             QMessageBox::information(nullptr, "Exception", e.what());
         }
@@ -157,6 +175,7 @@ void BookGUI::initConnect() {
         }
         lst->clear();
         ui_show_list();
+        Report_Buttons();
     });
     QObject::connect(modifyButton, &QPushButton::clicked, [&](){
         auto selectedItem = lst->selectedItems();
@@ -189,6 +208,7 @@ void BookGUI::initConnect() {
             txtAuthor->clear();
             txtGenre->clear();
             txtYear->clear();
+            Report_Buttons();
         }catch (Exception &e){
             QMessageBox::information(nullptr,"Exception", e.what());
         }
@@ -307,6 +327,7 @@ void BookGUI::initConnect() {
             QMessageBox::information(nullptr,"Exception","The option has already been triggered once");
         lst->clear();
         ui_show_list();
+        Report_Buttons();
     });
 
     QObject::connect(action_filter1,&QAction::triggered, [&](){
@@ -500,7 +521,12 @@ void CartWindow::initConnect() {
 
     QObject::connect(emptyButton,&QPushButton::clicked, [this](){
         lst->clear();
-        service.service_empty_cos();
+        try {
+            service.service_empty_cos();
+        }
+        catch (Exception &e){
+
+        }
     });
 
     QObject::connect(txtRandom,&QLineEdit::returnPressed,[&](){

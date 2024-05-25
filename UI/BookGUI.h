@@ -5,6 +5,8 @@
 class BookGUI : public QWidget{
 private:
     Service service;
+    vector<QPushButton*> BUTS;
+    QHBoxLayout* Main = new QHBoxLayout{};
     QListWidget* lst;
     QPushButton* addButton = new QPushButton{" &Add "};
     QPushButton* deleteButton = new QPushButton{" &Delete "};
@@ -28,6 +30,7 @@ private:
     QPushButton* reportButton = new QPushButton{" &Report "};
     QListWidget* popup = new QListWidget;
     int nrOfPopups = 0;
+    int nr;
 
     QShortcut* undo = new QShortcut(this);
     QShortcut* resetList = new QShortcut(this);
@@ -42,6 +45,7 @@ private:
     void initConnect();
     void ui_show_list();
     void onTrigger();
+    void Report_Buttons();
 
     void adjustPopup();
     void resizeEvent(QResizeEvent* event);
@@ -53,6 +57,7 @@ public:
         ui_show_list();
         initConnect();
         initGUI();
+        Report_Buttons();
     }
 
 };
