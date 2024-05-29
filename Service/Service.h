@@ -6,12 +6,13 @@
 #include <map>
 #include "Undo.h"
 #include <memory>
+#include "../UI/Observer.h"
 
 using std::unique_ptr;
 using std::map;
 using std::vector;
 
-class Service {
+class Service: public Subject{
 private:
     Repository_Interface &repository;
     vector<Undo*> undo_action;

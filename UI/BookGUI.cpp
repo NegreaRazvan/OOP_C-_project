@@ -8,11 +8,13 @@ void BookGUI::initGUI() {
     setLayout(Main);
 
 
-    lst->setSelectionMode(QAbstractItemView::MultiSelection);
     search->addRow("",txtSearch);
     txtSearch->setPlaceholderText("Search...");
     FirstColumn->addLayout(search);
-    FirstColumn->addWidget(lst);
+
+    lst_view->setUniformItemSizes(true);
+    lst_view->setModel(model);
+    FirstColumn->addWidget(lst_view);
     Main->addLayout(FirstColumn);
 
     auto SecondColumn = new QVBoxLayout;
@@ -46,6 +48,7 @@ void BookGUI::initGUI() {
     menuFilter->addAction(action_filter1);
     menuFilter->addAction(action_filter2);
     filterButton->setMenu(menuFilter);
+
     secondRow->addWidget(filterButton);
     secondRow->addWidget(generateBooksButton);
     secondRow->addWidget(cartButton);
@@ -75,42 +78,14 @@ void BookGUI::Report_Buttons(){
     }
 }
 
-void BookGUI::ui_show_list() {
-    vector<Carte> books;
-    try{
-        books = service.service_get_carti();
-    }catch (Exception &e){
-
-    }
-
-    for(const auto& book: books){
-        string output = "{Title} ";
-        output+=book.getTitlu();
-        output+=" {Author} ";
-        output+=book.getAutor();
-        output+=" {Genre} ";
-        output+=book.getGen();
-        output+=" {Year} ";
-        output+=std::to_string(book.getAnul());
-        this->lst->addItem(QString::fromStdString(output));
-    }
+void BookGUI::ui_show_list(MyTableModel* model, const vector<Carte>& v) {
+    this->model->setElemente(v);
 }
 
 void BookGUI::onTrigger() {
         vector<Carte> v;
         v = service.sort_lambda(1,true);
-        lst->clear();
-        for(const auto& book: v){
-            string output = "{Title} ";
-            output+=book.getTitlu();
-            output+=" {Author} ";
-            output+=book.getAutor();
-            output+=" {Genre} ";
-            output+=book.getGen();
-            output+=" {Year} ";
-            output+=std::to_string(book.getAnul());
-            this->lst->addItem(QString::fromStdString(output));
-        }
+        ui_show_list(model,v);
 }
 
 
@@ -146,7 +121,7 @@ void BookGUI::initConnect() {
         try {
             service.service_add_carte(title.toStdString(), author.toStdString(), genre.toStdString(), year);
             lst->clear();
-            ui_show_list();
+            ui_show_list(model,service.service_get_carti());
             txtTitle->clear();
             txtAuthor->clear();
             txtGenre->clear();
@@ -161,50 +136,33 @@ void BookGUI::initConnect() {
         }
     });
     QObject::connect(deleteButton, &QPushButton::clicked, [&](){
-       auto selectedItem = lst->selectedItems();
-        for(const auto &t: selectedItem){
-            string title;
-            int i = t->text().toStdString().find(' ');
-            i++;
-            while(i<t->text().toStdString().size()&&t->text().toStdString()[i]!='{'){
-                title.push_back(t->text().toStdString()[i]);
-                i++;
-            }
-            title.pop_back();
-            service.service_delete_carte(title);
+        auto selectedIndex = lst_view->selectionModel()->selectedIndexes().at(0);
+        int pozitie = selectedIndex.row();
+        auto titlu = service.service_get_carti()[pozitie].getTitlu();
+        service.service_delete_carte(titlu);
+        try {
+            ui_show_list(model, service.service_get_carti());
+        }catch (Exception &e){
+
         }
-        lst->clear();
-        ui_show_list();
         Report_Buttons();
     });
     QObject::connect(modifyButton, &QPushButton::clicked, [&](){
-        auto selectedItem = lst->selectedItems();
-        string title;
-        int nrOfSelectedItems=0;
-        for(const auto &t: selectedItem){
-            if(!nrOfSelectedItems) {
-                int i = t->text().toStdString().find(' ');
-                i++;
-                while (i < t->text().toStdString().size() && t->text().toStdString()[i] != '{') {
-                    title.push_back(t->text().toStdString()[i]);
-                    i++;
-                }
-                title.pop_back();
-            }
-            nrOfSelectedItems++;
-        }
-        if(nrOfSelectedItems!=1) {
+        auto selectedVector = lst_view->selectionModel()->selectedIndexes();
+        if(selectedVector.empty()) {
             QMessageBox::information(nullptr, "Exception", "Please select the right amount of items");
             return 1;
         }
-
+        auto selectedIndex=selectedVector[0];
+        int pozitie = selectedIndex.row();
+        auto title = service.service_get_carti()[pozitie].getTitlu();
         auto author = txtAuthor->text();
         auto genre = txtGenre->text();
         auto year = txtYear->text();
         try{
             service.service_modify_carte(title,author.toStdString(),genre.toStdString(),year.toInt());
             lst->clear();
-            ui_show_list();
+            ui_show_list(model,service.service_get_carti());
             txtAuthor->clear();
             txtGenre->clear();
             txtYear->clear();
@@ -220,89 +178,32 @@ void BookGUI::initConnect() {
     QObject::connect(action_sort2, &QAction::triggered,this,[&](){
         vector<Carte> v;
         v = service.sort_lambda(1, false);
-        lst->clear();
-        for(const auto& book: v){
-            string output = "{Title} ";
-            output+=book.getTitlu();
-            output+=" {Author} ";
-            output+=book.getAutor();
-            output+=" {Genre} ";
-            output+=book.getGen();
-            output+=" {Year} ";
-            output+=std::to_string(book.getAnul());
-            this->lst->addItem(QString::fromStdString(output));
-        }
-
+        ui_show_list(model,v);
     });
 
     QObject::connect(action_sort3, &QAction::triggered,this,[&](){
         vector<Carte> v;
         v = service.sort_lambda(2,true);
-        lst->clear();
-        for(const auto& book: v){
-            string output = "{Title} ";
-            output+=book.getTitlu();
-            output+=" {Author} ";
-            output+=book.getAutor();
-            output+=" {Genre} ";
-            output+=book.getGen();
-            output+=" {Year} ";
-            output+=std::to_string(book.getAnul());
-            this->lst->addItem(QString::fromStdString(output));
-        }
-
+        ui_show_list(model,v);
     });
 
     QObject::connect(action_sort4, &QAction::triggered,this,[&](){
         vector<Carte> v;
         v = service.sort_lambda(2, false);
-        lst->clear();
-        for(const auto& book: v){
-            string output = "{Title} ";
-            output+=book.getTitlu();
-            output+=" {Author} ";
-            output+=book.getAutor();
-            output+=" {Genre} ";
-            output+=book.getGen();
-            output+=" {Year} ";
-            output+=std::to_string(book.getAnul());
-            this->lst->addItem(QString::fromStdString(output));
-        }
+        ui_show_list(model,v);
 
     });
 
     QObject::connect(action_sort5, &QAction::triggered,this,[&](){
         vector<Carte> v;
         v = service.sort_lambda(3,true);
-        lst->clear();
-        for(const auto& book: v){
-            string output = "{Title} ";
-            output+=book.getTitlu();
-            output+=" {Author} ";
-            output+=book.getAutor();
-            output+=" {Genre} ";
-            output+=book.getGen();
-            output+=" {Year} ";
-            output+=std::to_string(book.getAnul());
-            this->lst->addItem(QString::fromStdString(output));
-        }
+        ui_show_list(model,v);
 
     });
     QObject::connect(action_sort6, &QAction::triggered,this,[&](){
         vector<Carte> v;
         v = service.sort_lambda(3, false);
-        lst->clear();
-        for(const auto& book: v){
-            string output = "{Title} ";
-            output+=book.getTitlu();
-            output+=" {Author} ";
-            output+=book.getAutor();
-            output+=" {Genre} ";
-            output+=book.getGen();
-            output+=" {Year} ";
-            output+=std::to_string(book.getAnul());
-            this->lst->addItem(QString::fromStdString(output));
-        }
+        ui_show_list(model,v);
 
     });
 
@@ -326,25 +227,14 @@ void BookGUI::initConnect() {
         }else
             QMessageBox::information(nullptr,"Exception","The option has already been triggered once");
         lst->clear();
-        ui_show_list();
+        ui_show_list(model,service.service_get_carti());
         Report_Buttons();
     });
 
     QObject::connect(action_filter1,&QAction::triggered, [&](){
         auto title = txtTitle->text();
         auto v = service.service_filter(title.toStdString());
-        lst->clear();
-        for(const auto& book: v){
-            string output = "{Title} ";
-            output+=book.getTitlu();
-            output+=" {Author} ";
-            output+=book.getAutor();
-            output+=" {Genre} ";
-            output+=book.getGen();
-            output+=" {Year} ";
-            output+=std::to_string(book.getAnul());
-            this->lst->addItem(QString::fromStdString(output));
-        }
+        ui_show_list(model,v);
         txtTitle->clear();
     });
 
@@ -365,18 +255,7 @@ void BookGUI::initConnect() {
             throw Exception{txtYear->text().toStdString() + " the number is too big!"};
         }
         auto v = service.service_filter(year);
-        lst->clear();
-        for (const auto &book: v) {
-            string output = "{Title} ";
-            output += book.getTitlu();
-            output += " {Author} ";
-            output += book.getAutor();
-            output += " {Genre} ";
-            output += book.getGen();
-            output += " {Year} ";
-            output += std::to_string(book.getAnul());
-            this->lst->addItem(QString::fromStdString(output));
-        }
+        ui_show_list(model,v);
         txtYear->clear();
     }
         catch (Exception &e){
@@ -409,17 +288,16 @@ void BookGUI::initConnect() {
     QObject::connect(undo,&QShortcut::activated, this,[&](){
         try{
             service.undo();
-            lst->clear();
-            ui_show_list();
+            ui_show_list(model,service.service_get_carti());
         }
         catch (Exception &e){
         }
     });
     resetList = new QShortcut(QKeySequence(Qt::Key_R),this);
     QObject::connect(resetList,&QShortcut::activated, this,[&](){
-        lst->clear();
-        ui_show_list();
+        ui_show_list(model,service.service_get_carti());
     });
+
 }
 
 void BookGUI::adjustPopup() {
@@ -441,6 +319,7 @@ void BookGUI::moveEvent(QMoveEvent *event) {
     QWidget::moveEvent(event);
     adjustPopup();
 }
+
 
 /****************************************************************/
 
@@ -467,7 +346,7 @@ void CartWindow::ui_show_list() {
 
 void CartWindow::initGui() {
     auto Main = new QVBoxLayout{};
-    Main->addWidget(lst);
+//    Main->addWidget(lst);
     setMinimumSize(500,200);
     setLayout(Main);
 
@@ -499,6 +378,8 @@ void CartWindow::initGui() {
     SecondColumn->addLayout(buttonRowContainer);
 
     Main->addLayout(SecondColumn);
+    Main->addWidget(crud);
+    Main->addWidget(readOnly);
 
     show();
 }
@@ -566,4 +447,91 @@ void CartWindow::initConnect() {
         txtPath->clear();
         return 0;
     });
+
+    QObject::connect(crud,&QPushButton::clicked,[&](){
+        CosCRUDGUI* CC = new CosCRUDGUI{service};
+        service.addObserver(CC);
+    });
+
+    QObject::connect(readOnly,&QPushButton::clicked,[&](){
+        CosReadOnlyGUI* CR = new CosReadOnlyGUI{service};
+        service.addObserver(CR);
+        CR->show();
+    });
+}
+
+/****************************************************************************************************/
+
+void CosCRUDGUI::initGui() {
+
+    auto Main = new QVBoxLayout{};
+    setLayout(Main);
+    lst_view->setUniformItemSizes(true);
+    lst_view->setModel(model);
+    Main->addWidget(lst_view);
+    auto menu = new QMenu,menuPath = new QMenu;
+    txtRandomAction->setDefaultWidget(txtRandom);
+    txtRandom->setPlaceholderText("Insert a number...");
+    menu->addAction(txtRandomAction);
+    gen->setMenu(menu);
+    Main->addWidget(gen);
+    Main->addWidget(goleste);
+    show();
+}
+
+void CosCRUDGUI::connect() {
+    QObject::connect(txtRandom,&QLineEdit::returnPressed,[&](){
+        try {
+            int nr_of_books;
+            try {
+                string::size_type idx;
+                nr_of_books = std::stoi(txtRandom->text().toStdString(), &idx, 10);
+                if (idx != txtRandom->text().toStdString().size()) {
+                    throw Exception{txtRandom->text().toStdString() + " is not a valid natural number!"};
+                }
+            }
+            catch (std::invalid_argument &) {
+                throw Exception{txtRandom->text().toStdString() + " is not a valid natural number!"};
+            }
+            catch (std::out_of_range &) {
+                throw Exception{txtRandom->text().toStdString() + " the number is too big!"};
+            }
+            try {
+                service.generate_books(nr_of_books);
+                txtRandom->clear();
+                update();
+            } catch (Exception &e) {
+                QMessageBox::information(nullptr, "Exception", e.what());
+            }
+        }catch (Exception &e){
+            QMessageBox::information(nullptr,"Exception",e.what());
+        }
+    });
+    QObject::connect(goleste,&QPushButton::clicked, [this](){
+        try {
+            service.service_empty_cos();
+            update();
+        }
+        catch (Exception &e){
+
+        }
+    });
+}
+
+void CosCRUDGUI::update() {
+    vector<Carte> books;
+    try{
+        books = service.service_get_carti_cos();
+        model->setElemente(books);
+    }catch (Exception &e){
+        model->setElemente(vector<Carte>());
+    }
+
+}
+
+/****************************************************************************************************/
+
+
+void CosReadOnlyGUI::update() {
+    repaint();
 }
