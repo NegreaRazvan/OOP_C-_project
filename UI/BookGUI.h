@@ -1,6 +1,10 @@
 #pragma once
 #include "QtWidgets"
 #include "../Service/Service.h"
+#include "../UI/Observer.h"
+#include "../UI/MyModel.h"
+#include <QListView>
+#include <QAbstractTableModel>
 
 class BookGUI : public QWidget{
 private:
@@ -41,9 +45,12 @@ private:
     QLineEdit* txtGenre = new QLineEdit;
     QLineEdit* txtYear = new QLineEdit;
 
+    MyTableModel* model = new MyTableModel(vector<Carte> ());
+    QListView* lst_view= new QListView{};
+
     void initGUI();
     void initConnect();
-    void ui_show_list();
+    void ui_show_list(MyTableModel* model, const vector<Carte>& v);
     void onTrigger();
     void Report_Buttons();
 
@@ -53,10 +60,14 @@ private:
 
 public:
     explicit BookGUI(Service &serv): service(serv){
-        lst = new QListWidget;
-        ui_show_list();
-        initConnect();
+        lst= new QListWidget;
         initGUI();
+        initConnect();
+        try {
+            ui_show_list(model, service.service_get_carti());
+        }catch (Exception &e){
+
+        }
         Report_Buttons();
     }
 
@@ -76,6 +87,8 @@ private:
     QLineEdit* txtPath = new QLineEdit;
     QWidgetAction* txtRandomAction = new QWidgetAction(this);
     QWidgetAction* txtPathAction = new QWidgetAction(this);
+    QPushButton* crud= new QPushButton{" &Crud "};
+    QPushButton* readOnly= new QPushButton{ " &Read "};
 
     void ui_show_list();
     void initGui();
@@ -90,5 +103,57 @@ public:
     }
 };
 
+/****************************************************************************************************/
 
+class CosCRUDGUI: public QWidget, public Observer{
+private:
+    Service& service;
+    MyTableModel* model = new MyTableModel(vector<Carte> ());
+    QListView* lst_view= new QListView{};
+    QPushButton* gen = new QPushButton{" &Generate "};
+    QLineEdit* txtRandom = new QLineEdit;
+    QWidgetAction* txtRandomAction = new QWidgetAction(this);
+    QPushButton* goleste = new QPushButton{" &Goleste "};
+
+    void initGui();
+    void connect();
+    void update() override;
+public:
+    explicit CosCRUDGUI(Service &service) : service(service), QWidget() {update();connect();initGui();}
+
+
+};
+
+/****************************************************************************************************/
+
+
+class CosReadOnlyGUI: public QWidget, public Observer{
+private:
+    Service& service;
+
+
+    void update() override;
+    void paintEvent(QPaintEvent* ev) override{
+        vector<Carte> books;
+        try{
+            books = service.service_get_carti_cos();
+        }catch (Exception &e){
+
+        }
+        QPainter p{this};
+        int x=0,y=0;
+        for(auto c: books) {
+            std::mt19937 mt{std::random_device{}()};
+            std::uniform_int_distribution<> dist(0, 60);
+            x = dist(mt);
+            std::mt19937 mt1{std::random_device{}()};
+            std::uniform_int_distribution<> dist1(0, 60);
+            y = dist(mt1);
+            p.drawRect(x,y, 20,10);
+        }
+    }
+public:
+    explicit CosReadOnlyGUI(Service &service) : service(service) {}
+
+};
 

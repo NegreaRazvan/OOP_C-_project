@@ -95,19 +95,23 @@ void Service::service_add_carte_cos(const string &titlu) {
     for(const auto & c : cos.get_all_carti())
         if(c==carte)
             throw Exception("Cartea deja apare in cos!\n");
+
     cos.add_carte_to_cos(carte);
+    notify();
 }
 
 void Service::service_empty_cos() {
     if(cos.get_all_carti().empty())
         throw Exception("Cos deja gol!");
     cos.empty_cos();
+    notify();
 }
 
 void Service::service_export_cos(const string &path) {
     if(!cos.get_all_carti().size())
         throw Exception("Cosul este gol!");
     cos.export_carti(path);
+
 }
 
 //void Service::clear_all_files(const vector<string> &paths) {
@@ -132,6 +136,7 @@ int Service::generate_books(const int &nr_of_books) {
             cos.add_carte_to_cos(repository.get_carte(rndNr));
         }
     }
+    notify();
     return nr_of_books_added_to_the_list;
 }
 

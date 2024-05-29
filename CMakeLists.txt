@@ -25,7 +25,10 @@ add_executable(C___OOP_QT main.cpp
         UI/UI_Application.h
         UI/BookGUI.cpp
         UI/BookGUI.h
-        UI/BookGUI.cpp)
+        UI/BookGUI.cpp
+        UI/Observer.h
+        UI/MyModel.h
+        UI/MyModel.cpp)
 target_link_libraries(C___OOP_QT
         Qt::Core
         Qt::Gui
